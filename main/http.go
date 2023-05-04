@@ -13,7 +13,7 @@ var CHARS = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 	"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
 	"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
 
-func main() {
+func HttpHandler() {
 
 	//单独写回调函数
 	http.HandleFunc("/get", getHandler)
@@ -21,9 +21,10 @@ func main() {
 	http.HandleFunc("/web/login", loginHandler)
 	http.HandleFunc("/zee/test", zeeTestHandler)
 	http.HandleFunc("/mage/test", mageTestHandler)
+	http.HandleFunc("/wx/test", wxTestHandler)
 	// addr：监听的地址
 	// handler：回调函数
-	http.ListenAndServe("192.168.1.32:9000", nil)
+	http.ListenAndServe("192.168.10.30:2040", nil)
 }
 
 func getHandler(w http.ResponseWriter, r *http.Request) {
@@ -123,6 +124,28 @@ func mageTestHandler(w http.ResponseWriter, r *http.Request) {
 	//answer := `{"data":{"code":"0","msg":"success"}}`
 	//answer, _ := json.Marshal(rs)
 	answer, _ := json.Marshal(Res{Code: "0", Res: randStr})
+	w.Write(answer)
+}
+
+func wxTestHandler(w http.ResponseWriter, r *http.Request) {
+	//randStr := GetRoundName(1)
+	token := r.Header.Get("Authorization")
+	if token != "enty" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	defer r.Body.Close()
+	//1. 请求类型是aplication/x-www-form-urlencode时解析form数据
+	fmt.Println(r.Body)
+	b, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Println("read request.Body failed, err", err)
+		return
+	}
+	fmt.Println(string(b))
+	//answer := `{"data":{"code":"0","msg":"success"}}`
+	//answer, _ := json.Marshal(rs)
+	answer, _ := json.Marshal(Res{Code: "0", Res: "ok"})
 	w.Write(answer)
 }
 
