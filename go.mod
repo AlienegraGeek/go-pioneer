@@ -1,6 +1,6 @@
 module AlienegraGeek/go-pioneer
 
-go 1.19
+go 1.18
 
 require (
 	github.com/matrix-org/util v0.0.0-20221111132719-399730281e66
