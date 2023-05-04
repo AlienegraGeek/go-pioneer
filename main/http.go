@@ -1,6 +1,7 @@
 package main
 
 import (
+	"AlienegraGeek/go-pioneer/open"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -13,8 +14,8 @@ var CHARS = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 	"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
 	"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
 
-func HttpHandler() {
-
+func main() {
+	open.InitGPT()
 	//单独写回调函数
 	http.HandleFunc("/get", getHandler)
 	http.HandleFunc("/post", postHandler)
@@ -24,7 +25,7 @@ func HttpHandler() {
 	http.HandleFunc("/wx/test", wxTestHandler)
 	// addr：监听的地址
 	// handler：回调函数
-	http.ListenAndServe("192.168.10.30:2040", nil)
+	http.ListenAndServe(":2040", nil)
 }
 
 func getHandler(w http.ResponseWriter, r *http.Request) {
