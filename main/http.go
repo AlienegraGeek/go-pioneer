@@ -175,9 +175,9 @@ func handleWechat(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("user req content hello:", resp.Content)
 		writeResponse(w, resp)
 	} else if req.MsgType == "text" {
-		done := make(chan bool)
+		//done := make(chan bool)
 		//open.InitGPT("一句话简单介绍一些golang")
-		var gRes = ""
+		var gRes = "等待中..."
 		go func() {
 			err, gRes = open.InitGPT(req.Content)
 			if err != nil {
@@ -185,38 +185,30 @@ func handleWechat(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "gpt res error", http.StatusInternalServerError)
 				return
 			}
-			done <- true
+			//done <- true
 		}()
-		<-done
-		// 如果请求是文本消息，并且不是"hello"，则回复一个相同的文本消息，并添加"echo: "前缀
+		//<-done
+		// 如果请求是文本消息，并且不是"hello"，则回复一个相同的文本消息
 		resp := WechatResponse{
 			ToUserName:   req.FromUserName,
 			FromUserName: req.ToUserName,
 			CreateTime:   req.CreateTime,
 			MsgType:      "text",
-			Content:      "答案: " + gRes,
+			Content:      gRes,
 		}
 		fmt.Println("gpt response done:", gRes)
 		writeResponse(w, resp)
-	} else {
-		// 如果请求不是文本或图片或文件消息，则回复一个默认的文本消息
-		resp := WechatResponse{
-			ToUserName:   req.FromUserName,
-			FromUserName: req.ToUserName,
-			CreateTime:   req.CreateTime,
-			MsgType:      "text",
-			Content:      "Welcome to Wechat Group Chat Bot!",
-		}
-		writeResponse(w, resp)
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 // writeResponse 用于将响应写入 http.ResponseWriter 中
 func writeResponse(w http.ResponseWriter, resp WechatResponse) {
-	respXML, err := xml.MarshalIndent(resp, "", "  ")
+	//respXML, err := xml.MarshalIndent(resp, "", "  ")
+	respXML, err := xml.Marshal(resp)
 	if err != nil {
 		fmt.Println("Failed to marshal response body:", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/xml; charset=utf-8")
