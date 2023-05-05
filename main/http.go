@@ -17,7 +17,7 @@ var CHARS = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 	"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
 
 const (
-	TOKEN = "YOUR_TOKEN" // 替换成您在公众平台后台设置的Token值
+	TOKEN = "EntySquare666" // 替换成您在公众平台后台设置的Token值
 )
 
 func main() {
