@@ -63,16 +63,7 @@ func main() {
 	http.HandleFunc("/post", postHandler)
 	http.HandleFunc("/mage/test", mageTestHandler)
 	http.HandleFunc("/wx/test", wxTestHandler)
-	http.HandleFunc("/wxChat", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case "GET":
-			checkSignature(w, r)
-		case "POST":
-			handleWechat(w, r)
-		default:
-			fmt.Fprintln(w, "Unsupported method")
-		}
-	})
+	http.HandleFunc("/wxChat", handleWechat)
 	// addr：监听的地址
 	// handler：回调函数
 	http.ListenAndServe(":2040", nil)
@@ -147,6 +138,11 @@ func wxTestHandler(w http.ResponseWriter, r *http.Request) {
 
 // 处理微信请求
 func handleWechat(w http.ResponseWriter, r *http.Request) {
+	if !checkSignature(w, r) {
+		fmt.Println("signature fail")
+		http.Error(w, "signature fail", http.StatusInternalServerError)
+		return
+	}
 	// 解析微信请求的 XML 数据
 	reqBody, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -228,7 +224,7 @@ func checkSignatureTest(signature, timestamp, nonce string) bool {
 }
 
 // CheckSignature 用于校验微信服务器发送的请求签名
-func checkSignature(w http.ResponseWriter, r *http.Request) {
+func checkSignature(w http.ResponseWriter, r *http.Request) bool {
 	signature := r.URL.Query().Get("signature")
 	timestamp := r.URL.Query().Get("timestamp")
 	nonce := r.URL.Query().Get("nonce")
@@ -240,8 +236,8 @@ func checkSignature(w http.ResponseWriter, r *http.Request) {
 	_, _ = io.WriteString(hash, strings.Join(params, ""))
 	if hex.EncodeToString(hash.Sum(nil)) != signature {
 		fmt.Fprintln(w, "Invalid signature")
-		return
+		return false
 	}
-
 	fmt.Fprintln(w, echostr)
+	return true
 }
