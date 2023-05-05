@@ -1,11 +1,14 @@
 package main
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"sort"
 	"time"
 )
 
@@ -16,6 +19,7 @@ var CHARS = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 func main() {
 	//open.InitGPT()
 	//单独写回调函数
+	http.HandleFunc("/", handler)
 	http.HandleFunc("/get", getHandler)
 	http.HandleFunc("/post", postHandler)
 	http.HandleFunc("/web/login", loginHandler)
@@ -25,6 +29,10 @@ func main() {
 	// addr：监听的地址
 	// handler：回调函数
 	http.ListenAndServe(":2040", nil)
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello, World!")
 }
 
 func getHandler(w http.ResponseWriter, r *http.Request) {
@@ -130,24 +138,48 @@ func mageTestHandler(w http.ResponseWriter, r *http.Request) {
 func wxTestHandler(w http.ResponseWriter, r *http.Request) {
 	//randStr := GetRoundName(1)
 	token := r.Header.Get("Authorization")
-	if token != "enty" {
-		fmt.Println("request token error")
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
+
+	//if token != "enty" {
+	//	fmt.Println("request token error")
+	//	http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	//	return
+	//}
 	defer r.Body.Close()
 	//1. 请求类型是aplication/x-www-form-urlencode时解析form数据
 	fmt.Println(r.Body)
+	sign := r.FormValue("signature")
+	//tk := r.FormValue("token")
+	ts := r.FormValue("timestamp")
+	nonce := r.FormValue("nonce")
+
+	fmt.Println("sign:" + sign)
+	fmt.Println("token:" + token)
+	fmt.Println("ts:" + ts)
+	fmt.Println("nonce:" + nonce)
+	ss := []string{token, ts, nonce}
+	sort.Strings(ss)
+
+	hash := sha1.Sum([]byte(token + ts + nonce))
+	hashStr := hex.EncodeToString(hash[:])
+	fmt.Printf("SHA1 hash of %q is %x\n", sign+ts+nonce, hash)
+	fmt.Printf(hashStr)
 	//b, err := io.ReadAll(r.Body)
 	//if err != nil {
 	//	fmt.Println("read request.Body failed, err", err)
 	//	return
 	//}
+	// 从请求参数中获取
+
 	//fmt.Println(string(b))
 	//answer := `{"data":{"code":"0","msg":"success"}}`
 	//answer, _ := json.Marshal(rs)
-	answer, _ := json.Marshal(Res{Code: "0", Res: "ok"})
-	w.Write(answer)
+	if hashStr == sign {
+		answer, _ := json.Marshal(Res{Code: "0", Res: "eAMsDT3TSkwaG8N059Q9U1LAFWnCMpziZGlMVXMq5nd"})
+		w.Write(answer)
+	} else {
+		answer, _ := json.Marshal(Res{Code: "0", Res: "data error"})
+		w.Write(answer)
+	}
 }
 
 func GetRoundName(size int) string {
