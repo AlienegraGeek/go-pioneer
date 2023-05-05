@@ -26,6 +26,6 @@ func InitGPT(content string) (error, string) {
 		return err, "error"
 	}
 
-	fmt.Println(resp.Choices[0].Message.Content)
+	fmt.Println("gpt response:", resp.Choices[0].Message.Content)
 	return nil, resp.Choices[0].Message.Content
 }

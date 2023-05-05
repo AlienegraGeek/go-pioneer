@@ -172,15 +172,22 @@ func handleWechat(w http.ResponseWriter, r *http.Request) {
 			MsgType:      "text",
 			Content:      "hello",
 		}
+		fmt.Println("user req content hello:", resp.Content)
 		writeResponse(w, resp)
 	} else if req.MsgType == "text" {
+		done := make(chan bool)
 		//open.InitGPT("一句话简单介绍一些golang")
-		err, gRes := open.InitGPT(req.Content)
-		if err != nil {
-			fmt.Println("gpt res error:", err)
-			http.Error(w, "gpt res error", http.StatusInternalServerError)
-			return
-		}
+		var gRes = ""
+		go func() {
+			err, gRes = open.InitGPT(req.Content)
+			if err != nil {
+				fmt.Println("gpt res error:", err)
+				http.Error(w, "gpt res error", http.StatusInternalServerError)
+				return
+			}
+			done <- true
+		}()
+		<-done
 		// 如果请求是文本消息，并且不是"hello"，则回复一个相同的文本消息，并添加"echo: "前缀
 		resp := WechatResponse{
 			ToUserName:   req.FromUserName,
@@ -189,6 +196,7 @@ func handleWechat(w http.ResponseWriter, r *http.Request) {
 			MsgType:      "text",
 			Content:      "答案: " + gRes,
 		}
+		fmt.Println("gpt response done:", gRes)
 		writeResponse(w, resp)
 	} else {
 		// 如果请求不是文本或图片或文件消息，则回复一个默认的文本消息
