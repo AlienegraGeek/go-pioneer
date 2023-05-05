@@ -6,7 +6,7 @@ import (
 	"github.com/sashabaranov/go-openai"
 )
 
-func InitGPT() {
+func InitGPT(content string) (error, string) {
 	client := openai.NewClient("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")
 	resp, err := client.CreateChatCompletion(
 		context.Background(),
@@ -15,7 +15,7 @@ func InitGPT() {
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleUser,
-					Content: "一句话简单介绍一下golang",
+					Content: content,
 				},
 			},
 		},
@@ -23,8 +23,9 @@ func InitGPT() {
 
 	if err != nil {
 		fmt.Printf("ChatCompletion error: %v\n", err)
-		return
+		return err, "error"
 	}
 
 	fmt.Println(resp.Choices[0].Message.Content)
+	return nil, resp.Choices[0].Message.Content
 }
