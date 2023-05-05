@@ -2,19 +2,23 @@ package main
 
 import (
 	"crypto/sha1"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"sort"
+	"strings"
 	"time"
 )
 
 var CHARS = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
 	"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
 	"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
+
+const (
+	TOKEN = "YOUR_TOKEN" // 替换成您在公众平台后台设置的Token值
+)
 
 func main() {
 	//open.InitGPT()
@@ -136,50 +140,32 @@ func mageTestHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func wxTestHandler(w http.ResponseWriter, r *http.Request) {
-	//randStr := GetRoundName(1)
-	token := r.Header.Get("Authorization")
-
-	//if token != "enty" {
-	//	fmt.Println("request token error")
-	//	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	//	return
-	//}
-	defer r.Body.Close()
-	//1. 请求类型是aplication/x-www-form-urlencode时解析form数据
-	fmt.Println(r.Body)
-	sign := r.FormValue("signature")
-	//tk := r.FormValue("token")
-	ts := r.FormValue("timestamp")
-	nonce := r.FormValue("nonce")
-
-	fmt.Println("sign:" + sign)
-	fmt.Println("token:" + token)
-	fmt.Println("ts:" + ts)
-	fmt.Println("nonce:" + nonce)
-	ss := []string{token, ts, nonce}
-	sort.Strings(ss)
-
-	hash := sha1.Sum([]byte(token + ts + nonce))
-	hashStr := hex.EncodeToString(hash[:])
-	fmt.Printf("SHA1 hash of %q is %x\n", sign+ts+nonce, hash)
-	fmt.Printf(hashStr)
-	//b, err := io.ReadAll(r.Body)
-	//if err != nil {
-	//	fmt.Println("read request.Body failed, err", err)
-	//	return
-	//}
-	// 从请求参数中获取
-
-	//fmt.Println(string(b))
-	//answer := `{"data":{"code":"0","msg":"success"}}`
-	//answer, _ := json.Marshal(rs)
-	if hashStr == sign {
-		answer, _ := json.Marshal(Res{Code: "0", Res: "eAMsDT3TSkwaG8N059Q9U1LAFWnCMpziZGlMVXMq5nd"})
-		w.Write(answer)
-	} else {
-		answer, _ := json.Marshal(Res{Code: "0", Res: "data error"})
-		w.Write(answer)
+	sign := r.URL.Query().Get("signature")
+	ts := r.URL.Query().Get("timestamp")
+	nonce := r.URL.Query().Get("nonce")
+	echostr := r.URL.Query().Get("echostr")
+	if checkSignature(sign, ts, nonce) {
+		// 如果请求来自微信服务器，则原样返回echostr参数值
+		w.WriteHeader(http.StatusOK)
+		_, err := fmt.Fprintf(w, "%s", echostr)
+		if err != nil {
+			fmt.Println("write error:", err)
+			return
+		}
+		return
 	}
+	// 如果请求不是来自微信服务器，则返回错误信息
+	http.Error(w, "Bad Request", http.StatusBadRequest)
+}
+
+// 检查请求是否来自微信服务器
+func checkSignature(signature, timestamp, nonce string) bool {
+	s := []string{TOKEN, timestamp, nonce}
+	sort.Strings(s)
+	sha1String := sha1.New()
+	sha1String.Write([]byte(strings.Join(s, "")))
+	hash := fmt.Sprintf("%x", sha1String.Sum(nil))
+	return signature == hash
 }
 
 func GetRoundName(size int) string {
