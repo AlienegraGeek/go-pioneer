@@ -175,7 +175,7 @@ func handleWechat(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("user req content hello:", resp.Content)
 		writeResponse(w, resp)
 	} else if req.MsgType == "text" {
-		//done := make(chan bool)
+		done := make(chan bool)
 		//open.InitGPT("一句话简单介绍一些golang")
 		var gRes = "等待中..."
 		go func() {
@@ -185,9 +185,9 @@ func handleWechat(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "gpt res error", http.StatusInternalServerError)
 				return
 			}
-			//done <- true
+			done <- true
 		}()
-		//<-done
+		<-done
 		// 如果请求是文本消息，并且不是"hello"，则回复一个相同的文本消息
 		resp := WechatResponse{
 			ToUserName:   req.FromUserName,
