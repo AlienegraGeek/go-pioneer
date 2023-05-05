@@ -198,8 +198,10 @@ func handleWechat(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("gpt response done:", gRes)
 		writeResponse(w, resp)
+	} else {
+		respXML, _ := xml.Marshal("success")
+		w.Write(respXML)
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 // writeResponse 用于将响应写入 http.ResponseWriter 中
