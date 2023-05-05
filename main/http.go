@@ -1,7 +1,6 @@
 package main
 
 import (
-	"AlienegraGeek/go-pioneer/open"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,7 +14,7 @@ var CHARS = []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 	"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
 
 func main() {
-	open.InitGPT()
+	//open.InitGPT()
 	//单独写回调函数
 	http.HandleFunc("/get", getHandler)
 	http.HandleFunc("/post", postHandler)
@@ -132,18 +131,19 @@ func wxTestHandler(w http.ResponseWriter, r *http.Request) {
 	//randStr := GetRoundName(1)
 	token := r.Header.Get("Authorization")
 	if token != "enty" {
+		fmt.Println("request token error")
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 	defer r.Body.Close()
 	//1. 请求类型是aplication/x-www-form-urlencode时解析form数据
 	fmt.Println(r.Body)
-	b, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Println("read request.Body failed, err", err)
-		return
-	}
-	fmt.Println(string(b))
+	//b, err := io.ReadAll(r.Body)
+	//if err != nil {
+	//	fmt.Println("read request.Body failed, err", err)
+	//	return
+	//}
+	//fmt.Println(string(b))
 	//answer := `{"data":{"code":"0","msg":"success"}}`
 	//answer, _ := json.Marshal(rs)
 	answer, _ := json.Marshal(Res{Code: "0", Res: "ok"})
