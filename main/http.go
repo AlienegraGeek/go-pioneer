@@ -56,20 +56,7 @@ const (
 	APPID     = "wx12ab0d88a0fa7f22"               // 替换为您的微信公众号AppSecret
 )
 
-func main() {
-	//open.InitGPT()
-	//单独写回调函数
-	http.HandleFunc("/get", getHandler)
-	http.HandleFunc("/post", postHandler)
-	http.HandleFunc("/mage/test", mageTestHandler)
-	http.HandleFunc("/wx/test", wxTestHandler)
-	http.HandleFunc("/wxChat", handleWechat)
-	// addr：监听的地址
-	// handler：回调函数
-	http.ListenAndServe(":2040", nil)
-}
-
-func getHandler(w http.ResponseWriter, r *http.Request) {
+func GetHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	data := r.URL.Query()
 	fmt.Println(data.Get("accNo"))
@@ -78,7 +65,7 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(answer))
 }
 
-func postHandler(w http.ResponseWriter, r *http.Request) {
+func PostHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	//1. 请求类型是aplication/x-www-form-urlencode时解析form数据
 	fmt.Println(r.Body)
@@ -96,7 +83,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(answer))
 }
 
-func mageTestHandler(w http.ResponseWriter, r *http.Request) {
+func MageTestHandler(w http.ResponseWriter, r *http.Request) {
 	randStr := util.GetRandomName(1)
 	defer r.Body.Close()
 	//1. 请求类型是aplication/x-www-form-urlencode时解析form数据
@@ -117,7 +104,7 @@ func mageTestHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(answer)
 }
 
-func wxTestHandler(w http.ResponseWriter, r *http.Request) {
+func WxTestHandler(w http.ResponseWriter, r *http.Request) {
 	sign := r.URL.Query().Get("signature")
 	ts := r.URL.Query().Get("timestamp")
 	nonce := r.URL.Query().Get("nonce")
@@ -137,7 +124,7 @@ func wxTestHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // 处理微信请求
-func handleWechat(w http.ResponseWriter, r *http.Request) {
+func HandleWechat(w http.ResponseWriter, r *http.Request) {
 	if !checkSignature(w, r) {
 		fmt.Println("signature fail")
 		http.Error(w, "signature fail", http.StatusInternalServerError)
@@ -173,9 +160,9 @@ func handleWechat(w http.ResponseWriter, r *http.Request) {
 	} else if req.MsgType == "text" {
 		done := make(chan bool)
 		//open.InitGPT("一句话简单介绍一些golang")
-		var gRes = "等待中..."
+		var gRes = "waiting..."
 		go func() {
-			err, gRes = open.InitGPT(req.Content)
+			gRes, err = open.FetchGPT(req.Content)
 			if err != nil {
 				fmt.Println("gpt res error:", err)
 				http.Error(w, "gpt res error", http.StatusInternalServerError)
