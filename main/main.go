@@ -5,21 +5,18 @@ import (
 	"fmt"
 	"github.com/wechaty/go-wechaty/wechaty"
 	wp "github.com/wechaty/go-wechaty/wechaty-puppet"
-	"github.com/wechaty/go-wechaty/wechaty/user"
 	"net/http"
 )
 
 func main() {
 
+	const WECHATYTOKEN = "puppet_paimon_68a6bcfa-551d-4929-9a0a-70379d65aaa9"
+
 	var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(wp.Option{
-		Token: "puppet_paimon_68a6bcfa-551d-4929-9a0a-70379d65aaa9",
+		Token: WECHATYTOKEN,
 	}))
 
-	bot.OnScan(chaty.OnScan).OnLogin(func(ctx *wechaty.Context, user *user.ContactSelf) {
-		fmt.Printf("User %s logined\n", user.Name())
-	}).OnMessage(chaty.OnMessage).OnLogout(func(ctx *wechaty.Context, user *user.ContactSelf, reason string) {
-		fmt.Printf("User %s logouted: %s\n", user, reason)
-	})
+	bot.OnScan(chaty.OnScan).OnLogin(chaty.OnLogin).OnMessage(chaty.OnMessage).OnLogout(chaty.OnLogout)
 
 	bot.DaemonStart()
 
@@ -29,6 +26,8 @@ func main() {
 	http.HandleFunc("/wx/test", WxTestHandler)
 	http.HandleFunc("/wxChat", HandleWechat)
 
-	http.ListenAndServe(":2040", nil)
-
+	err := http.ListenAndServe(":2040", nil)
+	if err != nil {
+		fmt.Print("http listen error", err)
+	}
 }

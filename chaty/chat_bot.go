@@ -10,22 +10,8 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"strings"
 	"time"
-	"unicode/utf8"
 )
-
-//func we() {
-//	var bot = wechaty.NewWechaty()
-//
-//	bot.OnScan(OnScan).OnLogin(func(ctx *wechaty.Context, user *user.ContactSelf) {
-//		fmt.Printf("User %s logined\n", user.Name())
-//	}).OnMessage(OnMessage).OnLogout(func(ctx *wechaty.Context, user *user.ContactSelf, reason string) {
-//		fmt.Printf("User %s logouted: %s\n", user, reason)
-//	})
-//
-//	bot.DaemonStart()
-//}
 
 func OnMessage(ctx *wechaty.Context, message *user.Message) {
 	log.Println(message)
@@ -41,20 +27,26 @@ func OnMessage(ctx *wechaty.Context, message *user.Message) {
 	log.Println("from id:", message.Talker().ID())
 	log.Println("from name:", message.Talker().Name())
 	talker := message.Talker().Name()
-	log.Println("from Weixin:", message.Talker().Weixin())
+	log.Println("mention text:", message.MentionText())
+	log.Println("mention state:", message.MentionSelf())
+	message.MentionList()
 
-	if message.Type() != schemas.MessageTypeText || (!strings.HasPrefix(message.Text(), "@Entiny") && !strings.HasPrefix(message.Text(), "@Malaka")) {
-		log.Println("Message discarded because it does not match '@Entiny' & '@Malaka'")
+	//if message.Type() != schemas.MessageTypeText || (!strings.HasPrefix(message.Text(), "@Entiny") && !strings.HasPrefix(message.Text(), "@Malaka")) {
+	//	log.Println("Message discarded because it does not match '@Entiny' & '@Malaka'")
+	//	return
+	//}
+
+	if message.Type() != schemas.MessageTypeText || !message.MentionSelf() {
+		log.Println("Message discarded because it does not mentioned")
 		return
 	}
-
-	// 问题内容
-	reqStr := message.Text()
+	//reqStr := message.Text()
 	// 将字符串转换成 rune 数组
-	rs := []rune(reqStr)
+	//rs := []rune(reqStr)
 	// 截取第 6 个字符到最后一个字符
-	n := utf8.RuneCountInString(reqStr)
-	problem := string(rs[8:n])
+	//n := utf8.RuneCountInString(reqStr)
+	//problem := string(rs[8:n])
+	problem := message.MentionText()
 	//fmt.Println("problem:", problem[1])
 	var gRes = "haha"
 	gRes, err := open.FetchContextGPT(talker, problem)
@@ -89,4 +81,12 @@ func OnScan(ctx *wechaty.Context, qrCode string, status schemas.ScanStatus, data
 		return
 	}
 	fmt.Printf("onScan: %s\n", status)
+}
+
+func OnLogin(ctx *wechaty.Context, user *user.ContactSelf) {
+	fmt.Printf("User %s logined\n", user.Name())
+}
+
+func OnLogout(ctx *wechaty.Context, user *user.ContactSelf, reason string) {
+	fmt.Printf("User %s logouted: %s\n", user, reason)
 }
