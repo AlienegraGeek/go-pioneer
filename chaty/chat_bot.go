@@ -4,29 +4,28 @@ import (
 	"AlienegraGeek/go-pioneer/open"
 	"fmt"
 	"github.com/mdp/qrterminal/v3"
+	"github.com/wechaty/go-wechaty/wechaty"
+	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
+	"github.com/wechaty/go-wechaty/wechaty/user"
 	"log"
 	"net/url"
 	"os"
 	"strings"
 	"time"
 	"unicode/utf8"
-
-	"github.com/wechaty/go-wechaty/wechaty"
-	"github.com/wechaty/go-wechaty/wechaty-puppet/schemas"
-	"github.com/wechaty/go-wechaty/wechaty/user"
 )
 
-func we() {
-	var bot = wechaty.NewWechaty()
-
-	bot.OnScan(OnScan).OnLogin(func(ctx *wechaty.Context, user *user.ContactSelf) {
-		fmt.Printf("User %s logined\n", user.Name())
-	}).OnMessage(OnMessage).OnLogout(func(ctx *wechaty.Context, user *user.ContactSelf, reason string) {
-		fmt.Printf("User %s logouted: %s\n", user, reason)
-	})
-
-	bot.DaemonStart()
-}
+//func we() {
+//	var bot = wechaty.NewWechaty()
+//
+//	bot.OnScan(OnScan).OnLogin(func(ctx *wechaty.Context, user *user.ContactSelf) {
+//		fmt.Printf("User %s logined\n", user.Name())
+//	}).OnMessage(OnMessage).OnLogout(func(ctx *wechaty.Context, user *user.ContactSelf, reason string) {
+//		fmt.Printf("User %s logouted: %s\n", user, reason)
+//	})
+//
+//	bot.DaemonStart()
+//}
 
 func OnMessage(ctx *wechaty.Context, message *user.Message) {
 	log.Println(message)
@@ -39,29 +38,37 @@ func OnMessage(ctx *wechaty.Context, message *user.Message) {
 		log.Println("Message discarded because its TOO OLD(than 2 minutes)")
 	}
 
+	log.Println("from id:", message.Talker().ID())
+	log.Println("from name:", message.Talker().Name())
+	talker := message.Talker().Name()
+	log.Println("from Weixin:", message.Talker().Weixin())
+
 	if message.Type() != schemas.MessageTypeText || (!strings.HasPrefix(message.Text(), "@Entiny") && !strings.HasPrefix(message.Text(), "@Malaka")) {
-		log.Println("Message discarded because it does not match '@Entiny'")
+		log.Println("Message discarded because it does not match '@Entiny' & '@Malaka'")
 		return
 	}
+
+	// 问题内容
 	reqStr := message.Text()
 	// 将字符串转换成 rune 数组
 	rs := []rune(reqStr)
 	// 截取第 6 个字符到最后一个字符
 	n := utf8.RuneCountInString(reqStr)
 	problem := string(rs[8:n])
-	//	fmt.Println("problem:", problem[1])
-	gRes, err := open.FetchGPT(problem)
+	//fmt.Println("problem:", problem[1])
+	var gRes = "haha"
+	gRes, err := open.FetchContextGPT(talker, problem)
 	if err != nil {
 		fmt.Println("gpt res error:", err)
 		return
 	}
 	// 1. reply 'dong'
-	_, err = message.Say(gRes)
+	_, err = message.Say("@" + talker + "\n" + gRes)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	fmt.Println("response:", gRes)
+	fmt.Println("response:", "@"+talker+" "+gRes)
 
 	// 2. reply image(qrcode image)
 	//fileBox, _ := file_box.FromUrl("https://wechaty.github.io/wechaty/images/bot-qr-code.png", "", nil)

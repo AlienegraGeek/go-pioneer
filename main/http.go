@@ -123,7 +123,7 @@ func WxTestHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Bad Request", http.StatusBadRequest)
 }
 
-// 处理微信请求
+// HandleWechat 处理微信请求
 func HandleWechat(w http.ResponseWriter, r *http.Request) {
 	if !checkSignature(w, r) {
 		fmt.Println("signature fail")
