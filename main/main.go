@@ -1,24 +1,21 @@
 package main
 
 import (
-	"AlienegraGeek/go-pioneer/chaty"
 	"fmt"
-	"github.com/wechaty/go-wechaty/wechaty"
-	wp "github.com/wechaty/go-wechaty/wechaty-puppet"
 	"net/http"
 )
 
 func main() {
 
-	const WECHATYTOKEN = "puppet_paimon_68a6bcfa-551d-4929-9a0a-70379d65aaa9"
-
-	var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(wp.Option{
-		Token: WECHATYTOKEN,
-	}))
-
-	bot.OnScan(chaty.OnScan).OnLogin(chaty.OnLogin).OnMessage(chaty.OnMessage).OnLogout(chaty.OnLogout)
-
-	bot.DaemonStart()
+	//const WECHATYTOKEN = "puppet_paimon_68a6bcfa-551d-4929-9a0a-70379d65aaa9"
+	//
+	//var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(wp.Option{
+	//	Token: WECHATYTOKEN,
+	//}))
+	//
+	//bot.OnScan(chaty.OnScan).OnLogin(chaty.OnLogin).OnMessage(chaty.OnMessage).OnLogout(chaty.OnLogout)
+	//
+	//bot.DaemonStart()
 
 	http.HandleFunc("/get", GetHandler)
 	http.HandleFunc("/post", PostHandler)
