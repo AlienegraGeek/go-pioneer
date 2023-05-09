@@ -1,6 +1,7 @@
 package main
 
 import (
+	http2 "AlienegraGeek/go-pioneer/http"
 	"fmt"
 	"net/http"
 )
@@ -17,11 +18,11 @@ func main() {
 	//
 	//bot.DaemonStart()
 
-	http.HandleFunc("/get", GetHandler)
-	http.HandleFunc("/post", PostHandler)
-	http.HandleFunc("/mage/test", MageTestHandler)
-	http.HandleFunc("/wx/test", WxTestHandler)
-	http.HandleFunc("/wxChat", HandleWechat)
+	http.HandleFunc("/get", http2.GetHandler)
+	http.HandleFunc("/post", http2.PostHandler)
+	http.HandleFunc("/mage/test", http2.MageTestHandler)
+	http.HandleFunc("/wx/test", http2.WxTestHandler)
+	http.HandleFunc("/wxChat", http2.HandleWechat)
 
 	err := http.ListenAndServe(":2040", nil)
 	if err != nil {
