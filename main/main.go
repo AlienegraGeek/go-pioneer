@@ -26,6 +26,6 @@ func main() {
 
 	err := http.ListenAndServe(":2040", nil)
 	if err != nil {
-		fmt.Print("http listen error", err)
+		fmt.Print("http listen error ", err)
 	}
 }
