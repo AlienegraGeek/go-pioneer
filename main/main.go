@@ -18,8 +18,8 @@ func main() {
 	//
 	//bot.DaemonStart()
 
-	http.HandleFunc("/get", http2.GetHandler)
-	http.HandleFunc("/post", http2.PostHandler)
+	//http.HandleFunc("/get", http2.GetHandler)
+	//http.HandleFunc("/post", http2.PostHandler)
 	http.HandleFunc("/mage/test", http2.MageTestHandler)
 	http.HandleFunc("/wx/test", http2.WxTestHandler)
 	http.HandleFunc("/wxChat", http2.HandleWechat)
