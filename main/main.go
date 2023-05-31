@@ -2,30 +2,55 @@ package main
 
 import (
 	http2 "AlienegraGeek/go-pioneer/http"
+	"AlienegraGeek/go-pioneer/routing"
 	"fmt"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"net/http"
+	"time"
 )
 
 func main() {
 
-	//const WECHATYTOKEN = "puppet_paimon_68a6bcfa-551d-4929-9a0a-70379d65aaa9"
-	//
-	//var bot = wechaty.NewWechaty(wechaty.WithPuppetOption(wp.Option{
-	//	Token: WECHATYTOKEN,
-	//}))
-	//
-	//bot.OnScan(chaty.OnScan).OnLogin(chaty.OnLogin).OnMessage(chaty.OnMessage).OnLogout(chaty.OnLogout)
-	//
-	//bot.DaemonStart()
-
-	//http.HandleFunc("/get", http2.GetHandler)
-	//http.HandleFunc("/post", http2.PostHandler)
 	http.HandleFunc("/mage/test", http2.MageTestHandler)
-	http.HandleFunc("/wx/test", http2.WxTestHandler)
-	http.HandleFunc("/wxChat", http2.HandleWechat)
+	//http.HandleFunc("/wx/test", http2.WxTestHandler)
+	//http.HandleFunc("/wxChat", http2.HandleWechat)
+	//
+	//err := http.ListenAndServe(":2040", nil)
+	//if err != nil {
+	//	fmt.Print("http listen error", err)
+	//}
+	fiberApp := fiber.New()
+	// 创建一个速率限制器，每秒最多只允许10个请求
+	fiberApp.Use(limiter.New(limiter.Config{
+		Max:        10,
+		Expiration: 2 * time.Second,
+		KeyGenerator: func(c *fiber.Ctx) string {
+			return c.IP() // 使用客户端IP作为限流key
+		},
+	}))
+	// 添加 CORS 中间件
+	fiberApp.Use(func(c *fiber.Ctx) error {
+		// 允许所有域名进行跨域请求
+		c.Set("Access-Control-Allow-Origin", "*")
+		// 允许 GET、POST、PUT、DELETE 和 OPTIONS 方法进行跨域请求
+		c.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		// 允许客户端发送的请求头
+		c.Set("Access-Control-Allow-Headers", "Content-Type, Authorization, token")
+		// 在响应中添加 CORS 头
+		if c.Method() == "OPTIONS" {
+			return c.SendStatus(fiber.StatusOK)
+		} else {
+			return c.Next()
+		}
+	})
+	// 将速率限制器添加到路由中间件中
+	fiberApp.Use(cors.New())
+	routing.Setup(fiberApp)
 
-	err := http.ListenAndServe(":2040", nil)
+	err := fiberApp.Listen(":2040")
 	if err != nil {
-		fmt.Print("http listen error", err)
+		fmt.Println(err.Error())
 	}
 }

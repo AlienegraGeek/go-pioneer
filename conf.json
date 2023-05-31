@@ -1,28 +1,7 @@
 {
-  "mpInfo": [
-    {
-      "id": 1,
-      "name": "Filer",
-      "version": "0.0.1",
-      "icon": "https://fileminiapp.oss-cn-shenzhen.aliyuncs.com/switch_blue.png"
-    },
-    {
-      "id": 2,
-      "name": "Nike",
-      "version": "0.0.1",
-      "icon": "https://fileminiapp.oss-cn-shenzhen.aliyuncs.com/switch_blue.png"
-    },
-    {
-      "id": 3,
-      "name": "Adidas",
-      "version": "0.0.1",
-      "icon": "https://fileminiapp.oss-cn-shenzhen.aliyuncs.com/switch_blue.png"
-    },
-    {
-      "id": 4,
-      "name": "Anta",
-      "version": "0.0.1",
-      "icon": "https://fileminiapp.oss-cn-shenzhen.aliyuncs.com/switch_blue.png"
-    }
-  ]
+    "phone": "13666666666",
+    "name": "Kobe",
+    "balance": 222,
+    "card": "1234567812345678",
+    "date": "2023/05/31"
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"AlienegraGeek/go-pioneer/util"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -108,13 +107,4 @@ func getMiniProgramInfo(w http.ResponseWriter, r *http.Request) {
 
 func mock(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "http mock")
-}
-
-func NewStatusOKJson(data interface{}) util.JSONResponse {
-	result := fmt.Sprintf("%+v", data)
-	fmt.Printf("\x1b[%dm[api-return] return : %v \x1b[0m\n", 32, result)
-	return util.JSONResponse{
-		Code: http.StatusOK,
-		JSON: data,
-	}
 }

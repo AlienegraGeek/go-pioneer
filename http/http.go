@@ -2,10 +2,8 @@ package http
 
 import (
 	"AlienegraGeek/go-pioneer/open"
-	"AlienegraGeek/go-pioneer/util"
 	"crypto/sha1"
 	"encoding/hex"
-	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -84,15 +82,14 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func MageTestHandler(w http.ResponseWriter, r *http.Request) {
-	randStr := util.GetRandomName(1)
 	defer r.Body.Close()
 	//1. 请求类型是aplication/x-www-form-urlencode时解析form数据
-	fmt.Println(r.Body)
+	//fmt.Println(r.Body)
 	//r.ParseForm()
 	//fmt.Println(r.PostForm) //打印form数数据
 	//fmt.Println(r.PostForm.Get("deviceSerial"))
 	//2. 请求类型是application/json时从r.Body读取数据
-	b, err := ioutil.ReadAll(r.Body)
+	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		fmt.Println("read request.Body failed, err", err)
 		return
@@ -100,8 +97,13 @@ func MageTestHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(string(b))
 	//answer := `{"data":{"code":"0","msg":"success"}}`
 	//answer, _ := json.Marshal(rs)
-	answer, _ := json.Marshal(randStr)
-	w.Write(answer)
+	//randStr := util.GetRandomName(1)
+	answer := `{"data":{"code":"0","msg":"success"}}`
+	fmt.Println([]byte(answer))
+	w.Write([]byte(answer))
+	//answer, _ := json.Marshal(randStr)
+	//fmt.Println(answer)
+	//w.Write(answer)
 }
 
 func WxTestHandler(w http.ResponseWriter, r *http.Request) {
