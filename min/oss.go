@@ -78,10 +78,7 @@ func Upload(minioClient *minio.Client, bucketName string) {
 }
 
 func UploadPreSigned(minioClient *minio.Client, bucketName, objectName string) (string, error) {
-	//bucketName := "my-bucket"
-	//objectName := c.Query("objectName", "default.txt")
 	expires := time.Duration(30) * time.Minute
-
 	// 确保存储桶存在
 	err := minioClient.MakeBucket(context.Background(), bucketName, minio.MakeBucketOptions{Region: "us-east-1"})
 	if err != nil {

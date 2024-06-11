@@ -13,12 +13,6 @@ type MinParam struct {
 }
 
 func GetPreSignedUrl(c *fiber.Ctx) error {
-	//testReq := MinParam{}
-	//err := c.BodyParser(&testReq)
-	//if err != nil {
-	//	return c.JSON(util.MessageResponse(config.MESSAGE_FAIL, "can not transfer request to struct", "请求参数错误"))
-	//}
-	//bucketName := "my-bucket"
 	bucketName := c.Query("bucket", "")
 	objectName := c.Query("object_name", "")
 	client := min.GetInstance()
@@ -32,12 +26,6 @@ func GetPreSignedUrl(c *fiber.Ctx) error {
 }
 
 func DownloadPreSignedUrl(c *fiber.Ctx) error {
-	//testReq := MinParam{}
-	//err := c.BodyParser(&testReq)
-	//if err != nil {
-	//	return c.JSON(util.MessageResponse(config.MESSAGE_FAIL, "can not transfer request to struct", "请求参数错误"))
-	//}
-	//bucketName := "my-bucket"
 	bucketName := c.Query("bucket", "")
 	objectName := c.Query("object_name", "")
 	client := min.GetInstance()
