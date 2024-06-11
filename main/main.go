@@ -1,26 +1,19 @@
 package main
 
 import (
-	http2 "AlienegraGeek/go-pioneer/http"
+	"AlienegraGeek/go-pioneer/min"
 	"AlienegraGeek/go-pioneer/routing"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
-	"net/http"
 	"time"
 )
 
 func main() {
 
-	http.HandleFunc("/mage/test", http2.MageTestHandler)
-	//http.HandleFunc("/wx/test", http2.WxTestHandler)
-	//http.HandleFunc("/wxChat", http2.HandleWechat)
-	//
-	//err := http.ListenAndServe(":2040", nil)
-	//if err != nil {
-	//	fmt.Print("http listen error", err)
-	//}
+	min.Init()
+
 	fiberApp := fiber.New()
 	// 创建一个速率限制器，每秒最多只允许10个请求
 	fiberApp.Use(limiter.New(limiter.Config{

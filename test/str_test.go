@@ -2,7 +2,6 @@ package test
 
 import (
 	"fmt"
-	"github.com/EntySquare/chat-enpt/entiny"
 	"strings"
 	"testing"
 	"unicode/utf8"
@@ -24,15 +23,15 @@ func TestStringSub(t *testing.T) {
 	fmt.Println(s2) // 输出：, 你好！
 }
 
-func TestBot(t *testing.T) {
-	en := entiny.NewEntiny()
-	bot, err := en.InitWeChatyBot("puppet_paimon_68a6bcfa-551d-4929-9a0a-70379d65aaa9")
-	if err != nil {
-		return
-	}
-	//bot.DaemonStart()
-	err = en.SendMsg(bot, "Mage", "pooluo", "panic")
-	if err != nil {
-		return
-	}
-}
+//func TestBot(t *testing.T) {
+//	en := entiny.NewEntiny()
+//	bot, err := en.InitWeChatyBot("puppet_paimon_68a6bcfa-551d-4929-9a0a-70379d65aaa9")
+//	if err != nil {
+//		return
+//	}
+//	//bot.DaemonStart()
+//	err = en.SendMsg(bot, "Mage", "pooluo", "panic")
+//	if err != nil {
+//		return
+//	}
+//}
