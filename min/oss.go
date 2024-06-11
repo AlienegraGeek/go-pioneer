@@ -8,15 +8,23 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var minioClient *minio.Client
+var MinioClient *minio.Client
 
-func Init() {
+func GetInstance() *minio.Client {
+	if MinioClient == nil {
+		log.Fatalln("[GetInstance] Failed")
+	}
+	return MinioClient
+}
+
+func Init() *minio.Client {
 	// 初始化 MinIO 客户端
 	ctx := context.Background()
-	endpoint := config.EnvLoad("MIN_HOST") + ":" + config.EnvLoad("MIN_PORT") // MinIO 服务的地址
-	accessKeyID := config.EnvLoad("MIN_AK")                                   // 访问密钥
-	secretAccessKey := config.EnvLoad("MIN_SK")                               // 秘密密钥
-	useSSL := false                                                           // 启用 SSL
+	//endpoint := config.EnvLoad("MIN_HOST") + ":" + config.EnvLoad("MIN_PORT") // MinIO 服务的地址
+	endpoint := config.EnvLoad("MIN_HOST")      // MinIO 服务的地址
+	accessKeyID := config.EnvLoad("MIN_AK")     // 访问密钥
+	secretAccessKey := config.EnvLoad("MIN_SK") // 秘密密钥
+	useSSL := true                              // 启用 SSL
 	// 禁用 TLS 证书验证
 	//customTransport := http.DefaultTransport.(*http.Transport).Clone()
 	//customTransport.TLSClientConfig = &tls.Config{
@@ -27,15 +35,15 @@ func Init() {
 		Secure: useSSL,
 		//Transport: customTransport,
 	})
+	MinioClient = minioClient
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	// 创建存储桶（Bucket）
 	bucketName := "my-bucket"
-	location := "us-east-1"
-
-	err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{Region: location})
+	//err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{Region: "us-east-1"})
+	err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 	if err != nil {
 		// 检查存储桶是否已经存在
 		exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
@@ -47,13 +55,14 @@ func Init() {
 	} else {
 		log.Printf("Successfully created bucket %s\n", bucketName)
 	}
-	Upload(minioClient, bucketName)
+	return minioClient
+	//Upload(minioClient, bucketName)
 }
 
 func Upload(minioClient *minio.Client, bucketName string) {
 	objectName := "data.json"
-	filePath := "/Users/yuvan/Documents/github/go-pioneer/file/req.json"
-	//filePath := "./file/req.json"
+	filePath := "/Users/yuvan/Documents/github/go-pioneer/file/data.json"
+	//filePath := "./file/data.json"
 	//contentType := "application/octet-stream"
 	contentType := "application/json"
 
@@ -69,7 +78,7 @@ func Upload(minioClient *minio.Client, bucketName string) {
 func Download(minioClient *minio.Client, filePath string) {
 	// 下载文件
 	objectName := "data.json"
-	filePath = "/Users/yuvan/Documents/github/go-pioneer/file/res.json"
+	//filePath = "/Users/yuvan/Documents/github/go-pioneer/file/res1.html"
 	err := minioClient.FGetObject(context.Background(), "my-bucket", objectName, filePath, minio.GetObjectOptions{})
 	if err != nil {
 		log.Fatalln(err)
