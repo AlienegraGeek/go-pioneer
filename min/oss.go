@@ -3,9 +3,11 @@ package min
 import (
 	"AlienegraGeek/go-pioneer/config"
 	"context"
+	"crypto/tls"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	log "github.com/sirupsen/logrus"
+	"net/http"
 )
 
 var MinioClient *minio.Client
@@ -26,14 +28,14 @@ func Init() *minio.Client {
 	secretAccessKey := config.EnvLoad("MIN_SK") // 秘密密钥
 	useSSL := true                              // 启用 SSL
 	// 禁用 TLS 证书验证
-	//customTransport := http.DefaultTransport.(*http.Transport).Clone()
-	//customTransport.TLSClientConfig = &tls.Config{
-	//	InsecureSkipVerify: true,
-	//}
+	customTransport := http.DefaultTransport.(*http.Transport).Clone()
+	customTransport.TLSClientConfig = &tls.Config{
+		InsecureSkipVerify: true,
+	}
 	minioClient, err := minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
-		//Transport: customTransport,
+		Creds:     credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+		Secure:    useSSL,
+		Transport: customTransport,
 	})
 	MinioClient = minioClient
 	if err != nil {

@@ -12,5 +12,5 @@ func TestUpload(t *testing.T) {
 
 func TestDownload(t *testing.T) {
 	client := min.Init()
-	min.Download(client, "/Users/yuvan/Documents/github/go-pioneer/file/data1.json")
+	min.Download(client, "/Users/yuvan/Documents/github/go-pioneer/file/data2.json")
 }

@@ -1,2 +1,2 @@
 # go-pioneer
-pioneer of golang & entiny
+Pioneer of Golang
