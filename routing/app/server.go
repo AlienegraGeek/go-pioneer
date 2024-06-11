@@ -1,12 +1,12 @@
 package app
 
 import (
-	"AlienegraGeek/go-pioneer/config"
-	"AlienegraGeek/go-pioneer/routing/types"
-	"AlienegraGeek/go-pioneer/util"
 	"encoding/json"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"go-pioneer/config"
+	"go-pioneer/routing/types"
+	"go-pioneer/util"
 	"os"
 	"time"
 )

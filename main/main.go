@@ -1,12 +1,12 @@
 package main
 
 import (
-	"AlienegraGeek/go-pioneer/min"
-	"AlienegraGeek/go-pioneer/routing"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
+	"go-pioneer/min"
+	"go-pioneer/routing"
 	"time"
 )
 

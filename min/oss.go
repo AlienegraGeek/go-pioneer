@@ -1,13 +1,14 @@
 package min
 
 import (
-	"AlienegraGeek/go-pioneer/config"
 	"context"
 	"crypto/tls"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	log "github.com/sirupsen/logrus"
+	"go-pioneer/config"
 	"net/http"
+	"time"
 )
 
 var MinioClient *minio.Client
@@ -73,8 +74,30 @@ func Upload(minioClient *minio.Client, bucketName string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	log.Printf("Successfully uploaded %s to %s/%s\n", filePath, bucketName, objectName)
+}
+
+func UploadPreSigned(minioClient *minio.Client, bucketName, objectName string) (string, error) {
+	//bucketName := "my-bucket"
+	//objectName := c.Query("objectName", "default.txt")
+	expires := time.Duration(30) * time.Minute
+
+	// 确保存储桶存在
+	err := minioClient.MakeBucket(context.Background(), bucketName, minio.MakeBucketOptions{Region: "us-east-1"})
+	if err != nil {
+		exists, errBucketExists := minioClient.BucketExists(context.Background(), bucketName)
+		if errBucketExists == nil && exists {
+			log.Printf("Bucket %s already exists\n", bucketName)
+		} else {
+			log.Fatalln(err)
+		}
+	}
+	// 生成预签名 URL
+	preSignedURL, err := minioClient.PresignedPutObject(context.Background(), bucketName, objectName, expires)
+	if err != nil {
+		return "", err
+	}
+	return preSignedURL.String(), nil
 }
 
 func Download(minioClient *minio.Client, filePath string) {
@@ -86,6 +109,16 @@ func Download(minioClient *minio.Client, filePath string) {
 		log.Fatalln(err)
 	}
 	log.Printf("Successfully downloaded %s/%s to %s\n", "my-bucket", objectName, filePath)
+}
+
+func DownloadPreSigned(minioClient *minio.Client, bucketName, objectName string) (string, error) {
+	expires := time.Duration(30) * time.Minute
+	// 生成预签名 URL
+	preSignedURL, err := minioClient.PresignedGetObject(context.Background(), bucketName, objectName, expires, nil)
+	if err != nil {
+		return "", err
+	}
+	return preSignedURL.String(), nil
 }
 
 func ListObj(minioClient *minio.Client, bucketName string) {

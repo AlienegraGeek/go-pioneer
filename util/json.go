@@ -1,8 +1,8 @@
 package util
 
 import (
-	"AlienegraGeek/go-pioneer/log"
 	"github.com/sirupsen/logrus"
+	"go-pioneer/log"
 )
 
 const (

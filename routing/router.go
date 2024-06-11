@@ -1,12 +1,14 @@
 package routing
 
 import (
-	"AlienegraGeek/go-pioneer/routing/app"
 	"github.com/gofiber/fiber/v2"
+	"go-pioneer/routing/app"
 )
 
 func Setup(f *fiber.App) {
-	appApi := f.Group("/app")
+	api := f.Group("/api")
 
-	appApi.Post("/test", app.HandleTest)
+	api.Post("/test", app.HandleTest)
+	api.Get("/uploadPre", app.GetPreSignedUrl)
+	api.Get("/downloadPre", app.DownloadPreSignedUrl)
 }

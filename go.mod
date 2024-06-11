@@ -1,4 +1,4 @@
-module AlienegraGeek/go-pioneer
+module go-pioneer
 
 go 1.20
 
