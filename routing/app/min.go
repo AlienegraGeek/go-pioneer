@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/gofiber/fiber/v2"
+	log "github.com/sirupsen/logrus"
 	"go-pioneer/config"
 	"go-pioneer/min"
 	"go-pioneer/util"
@@ -18,6 +19,7 @@ func GetPreSignedUrl(c *fiber.Ctx) error {
 	client := min.GetInstance()
 	preSignedURL, err := min.UploadPreSigned(client, bucketName, objectName)
 	if err != nil {
+		log.Infof("upload error: %v", err)
 		return c.JSON(util.MessageResponse(config.MESSAGE_FAIL, "", "上传错误"))
 	}
 	return c.JSON(fiber.Map{
