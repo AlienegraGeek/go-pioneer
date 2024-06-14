@@ -105,7 +105,7 @@ func bucketQuotaCmd(bucketName string) {
 	}
 }
 
-func bucketQuotaApi(bucketName string) {
+func BucketQuotaApi(bucketName string) {
 	cf := getClientConfig()
 	admClient, err := madmin.NewWithOptions(cf.Endpoint, &madmin.Options{
 		Creds:  credentials.NewStaticV4(cf.AccessKey, cf.SecretKey, ""),
@@ -116,7 +116,8 @@ func bucketQuotaApi(bucketName string) {
 		return
 	}
 	// 设置存储桶的硬配额为 1GiB
-	err = admClient.SetBucketQuota(context.Background(), bucketName, &madmin.BucketQuota{Quota: 1 * 1024 * 1024 * 1024, Type: madmin.HardQuota})
+	bq := &madmin.BucketQuota{Quota: 1 * 1024 * 1024 * 1024, Type: madmin.HardQuota}
+	err = admClient.SetBucketQuota(context.Background(), bucketName, bq)
 	if err != nil {
 		log.Fatalln(err)
 	}

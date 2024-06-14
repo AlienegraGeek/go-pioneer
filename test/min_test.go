@@ -22,3 +22,7 @@ func TestCreateFolder(t *testing.T) {
 		t.Fatalf("CreateFolder error: %v", err)
 	}
 }
+
+func TestQuota(t *testing.T) {
+	min.BucketQuotaApi("my-bucket")
+}
