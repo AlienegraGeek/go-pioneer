@@ -6,6 +6,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/joho/godotenv v1.5.1
 	github.com/mdp/qrterminal/v3 v3.0.0
+	github.com/minio/madmin-go/v3 v3.0.55
 	github.com/minio/minio-go/v7 v7.0.71
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/sashabaranov/go-openai v1.9.3
@@ -32,7 +33,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
-	github.com/minio/madmin-go/v3 v3.0.55 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/otiai10/opengraph v1.1.1 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect

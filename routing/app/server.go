@@ -65,3 +65,12 @@ func hasNewData() bool {
 	// 根据实际需求和业务逻辑来判断是否有新数据
 	return true
 }
+
+func HandleTest2(c *fiber.Ctx) error {
+	testReq := types.TestParam{}
+	err := c.BodyParser(&testReq)
+	if err != nil {
+		return c.JSON(util.MessageResponse(config.MESSAGE_FAIL, "can not transfer request to struct", "请求参数错误"))
+	}
+	return c.JSON(util.SuccessResponse("success:" + testReq.Phone))
+}
