@@ -2,12 +2,14 @@ package min
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	log "github.com/sirupsen/logrus"
 	"go-pioneer/config"
+	"net/http"
 	"os/exec"
 	"time"
 )
@@ -31,15 +33,15 @@ func Init() *minio.Client {
 	// 初始化 MinIO 客户端
 	//endpoint := config.EnvLoad("MIN_HOST") + ":" + config.EnvLoad("MIN_PORT") // MinIO 服务的地址
 	cf := getClientConfig()
-	// 禁用 TLS 证书验证
-	//customTransport := http.DefaultTransport.(*http.Transport).Clone()
-	//customTransport.TLSClientConfig = &tls.Config{
-	//	InsecureSkipVerify: true,
-	//}
+	// 跳过 TLS 证书验证
+	customTransport := http.DefaultTransport.(*http.Transport).Clone()
+	customTransport.TLSClientConfig = &tls.Config{
+		InsecureSkipVerify: true,
+	}
 	minioClient, err := minio.New(cf.Endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(cf.AccessKey, cf.SecretKey, ""),
-		Secure: false, // 启用 SSL
-		//Transport: customTransport,
+		Creds:     credentials.NewStaticV4(cf.AccessKey, cf.SecretKey, ""),
+		Secure:    false, // 启用 SSL
+		Transport: customTransport,
 	})
 	MinioClient = minioClient
 	if err != nil {
