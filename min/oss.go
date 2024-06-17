@@ -153,14 +153,16 @@ func UploadPreSigned(minioClient *minio.Client, bucketName, objectName string) (
 	if err != nil {
 		exists, errBucketExists := minioClient.BucketExists(context.Background(), bucketName)
 		if errBucketExists == nil && exists {
-			log.Printf("Bucket %s already exists\n", bucketName)
+			log.Printf("[UploadPreSigned] Bucket %s already exists\n", bucketName)
 		} else {
-			log.Fatalln(err)
+			log.Errorf("[UploadPreSigned] Bucket nil error:%v", err)
+			return "", err
 		}
 	}
 	// 生成预签名 URL
 	preSignedURL, err := minioClient.PresignedPutObject(context.Background(), bucketName, objectName, expires)
 	if err != nil {
+		log.Errorf("[UploadPreSigned] Pre sign error:%v", err)
 		return "", err
 	}
 	return preSignedURL.String(), nil
@@ -182,6 +184,7 @@ func DownloadPreSigned(minioClient *minio.Client, bucketName, objectName string)
 	// 生成预签名 URL
 	preSignedURL, err := minioClient.PresignedGetObject(context.Background(), bucketName, objectName, expires, nil)
 	if err != nil {
+		log.Errorf("[DownloadPreSigned] error:%v", err)
 		return "", err
 	}
 	return preSignedURL.String(), nil
