@@ -26,3 +26,7 @@ func TestCreateFolder(t *testing.T) {
 func TestQuota(t *testing.T) {
 	min.BucketQuotaApi("my-bucket")
 }
+
+func TestAddUser(t *testing.T) {
+	min.AddUser()
+}
